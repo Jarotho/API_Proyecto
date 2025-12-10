@@ -15,6 +15,15 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+use App\Http\Controllers\SessionController;
 
-//Route::apiResource("/alumnos", AlumnoController::class);
-//Route::apiResource("/profesores", ProfesorController::class);
+Route::post('/alumnos/{id}/session/login',  [SessionController::class, 'login']);
+Route::post('/alumnos/{id}/session/verify', [SessionController::class, 'verify']);
+Route::post('/alumnos/{id}/session/logout', [SessionController::class, 'logout']);
+
+
+Route::apiResource("/alumnos", AlumnoController::class);
+Route::apiResource("/profesores", ProfesorController::class);
+Route::post('/alumnos/{id}/email', [AlumnoController::class, 'sendEmail']);
+Route::post('/alumnos/{id}/fotoPerfil', [AlumnoController::class, 'uploadFotoPerfil']);
+

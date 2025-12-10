@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
-class Profesor
-{
-    public $id;
-    public $numeroEmpleado;
-    public $nombres;
-    public $apellidos;
-    public $horasClase;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-    public function __construct($id, $numeroEmpleado, $nombres, $apellidos, $horasClase)
-    {
-        $this->id = $id;
-        $this->numeroEmpleado = $numeroEmpleado;
-        $this->nombres = $nombres;
-        $this->apellidos = $apellidos;
-        $this->horasClase = $horasClase;
-    }
+class Profesor extends Model
+{
+    use HasFactory;
+
+    protected $table = 'profesores';
+
+    // Eloquent ya maneja 'id' autoincremental por defecto
+    protected $fillable = [
+        'numeroEmpleado',
+        'nombres',
+        'apellidos',
+        'horasClase',
+    ];
 }
