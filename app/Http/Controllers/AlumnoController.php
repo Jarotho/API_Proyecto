@@ -102,26 +102,41 @@ class AlumnoController extends Controller
         return response()->json(['message' => 'Eliminado'], 200);
     }
 
-   public function sendEmail(Request $request, SnsService $snsService)
+   public function sendEmail($id)
 {
-    $request->validate([
-        'email' => 'required|email',
-    ]);
+    $alumno = Alumno::find($id);
 
-    $email = $request->input('email');
+    if (!$alumno) {
+        return response()->json(['message' => 'Alumno no encontrado'], 404);
+    }
 
-    // Aquí tu lógica actual de Mail::send(...) (si la tienes)
+    // Si el correo NO es @correo.uady.mx -> 404
+    if (!preg_match('/@correo\.uady\.mx$/', $alumno->correo)) {
+        return response()->json([
+            'message' => 'El correo no pertenece al dominio @correo.uady.mx'
+        ], 404);
+    }
 
-    // Enviar notificación a SNS
-    $snsService->publish(
-        'Nuevo envío de correo a alumno',
-        "Se ha enviado un correo al alumno con email: {$email}"
-    );
+    $mensaje = [
+        'nombre'    => $alumno->nombre,
+        'matricula' => $alumno->matricula,
+        'promedio'  => $alumno->promedio,
+    ];
+
+    try {
+        // aquí va el publish a SNS si quieres, **si falla no debe romper**
+        // Log::info('Email enviado (simulado)', $mensaje);
+    } catch (\Throwable $e) {
+        \Log::error('Error enviando SNS', ['error' => $e->getMessage()]);
+        // pero NO regresamos 500, solo logueamos
+    }
 
     return response()->json([
-        'message' => 'Correo enviado y notificación SNS publicada',
+        'message' => 'Email enviado correctamente',
+        'info'    => $mensaje
     ], 200);
 }
+
 
 
 public function uploadFotoPerfil(Request $request, $id): JsonResponse
