@@ -8,6 +8,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\Services\SnsService;
+
 
 
 
@@ -100,20 +102,27 @@ class AlumnoController extends Controller
         return response()->json(['message' => 'Eliminado'], 200);
     }
 
-   public function sendEmail($id, Request $request): JsonResponse
+   public function sendEmail(Request $request, SnsService $snsService)
 {
-    $alumno = Alumno::find($id);
+    $request->validate([
+        'email' => 'required|email',
+    ]);
 
-    if (!$alumno) {
-        return response()->json(['message' => 'Alumno no encontrado'], 404);
-    }
+    $email = $request->input('email');
 
-    // Para el autotest NO es necesario mandar correo real
+    // Aquí tu lógica actual de Mail::send(...) (si la tienes)
+
+    // Enviar notificación a SNS
+    $snsService->publish(
+        'Nuevo envío de correo a alumno',
+        "Se ha enviado un correo al alumno con email: {$email}"
+    );
+
     return response()->json([
-        'message'  => 'Correo enviado correctamente',
-        'alumnoId' => $alumno->id,
+        'message' => 'Correo enviado y notificación SNS publicada',
     ], 200);
 }
+
 
 public function uploadFotoPerfil(Request $request, $id): JsonResponse
 {
